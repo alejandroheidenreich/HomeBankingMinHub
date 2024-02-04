@@ -1,5 +1,6 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMinHub.Models;
+using HomeBankingMinHub.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeBankingMinHub
@@ -15,6 +16,11 @@ namespace HomeBankingMinHub
 
             // Add DbContext to the container
             builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
+
+            // Add service to the container
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+
+
 
             var app = builder.Build();
 
