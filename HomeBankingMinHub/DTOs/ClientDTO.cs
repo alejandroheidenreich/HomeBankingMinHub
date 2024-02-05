@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace HomeBankingMinHub.Models
+namespace HomeBankingMinHub.DTOs
 {
     public class ClientDTO
     {

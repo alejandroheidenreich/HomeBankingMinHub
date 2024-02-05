@@ -1,4 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
+using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using Microsoft.EntityFrameworkCore;
 

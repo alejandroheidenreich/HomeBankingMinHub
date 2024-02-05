@@ -1,5 +1,6 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMinHub.Controllers;
+using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using HomeBankingMinHub.Repositories;
 using Microsoft.EntityFrameworkCore;

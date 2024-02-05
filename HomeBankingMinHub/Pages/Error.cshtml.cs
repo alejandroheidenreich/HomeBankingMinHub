@@ -8,7 +8,7 @@ namespace HomeBankingMinHub.Pages
     [IgnoreAntiforgeryToken]
     public class ErrorModel : PageModel
     {
-        public string? RequestId
+        public string RequestId
         {
             get; set;
         }

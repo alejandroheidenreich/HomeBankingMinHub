@@ -1,4 +1,4 @@
-﻿namespace HomeBankingMinHub.Models
+﻿namespace HomeBankingMinHub.DTOs
 {
     public class AccountDTO
     {

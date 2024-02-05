@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using HomeBankingMinHub.Intefaces;
 
 namespace HomeBankingMinHub.Repositories
 {
