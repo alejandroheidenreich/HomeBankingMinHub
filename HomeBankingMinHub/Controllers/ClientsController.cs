@@ -18,41 +18,17 @@ namespace HomeBankingMinHub.Controllers
             _clientRepository = clientRepository;
         }
 
-
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
                 var clients = _clientRepository.GetAllClients();
-
                 var clientsDTO = new List<ClientDTO>();
-
 
                 foreach (Client client in clients)
                 {
-
-                    var newClientDTO = new ClientDTO
-                    {
-
-                        Id = client.Id,
-                        Email = client.Email,
-                        FirstName = client.FirstName,
-                        LastName = client.LastName,
-                        Accounts = client.Accounts.Select(ac => new AccountDTO
-                        {
-                            Id = ac.Id,
-
-                            Balance = ac.Balance,
-
-                            CreationDate = ac.CreationDate,
-
-                            Number = ac.Number
-                        }).ToList()
-
-                    };
-
-                    clientsDTO.Add(newClientDTO);
+                    clientsDTO.Add(new ClientDTO(client));
                 }
          
                 return Ok(clientsDTO);
@@ -73,33 +49,8 @@ namespace HomeBankingMinHub.Controllers
                 var client = _clientRepository.FindById(id);
 
                 if (client == null) return Forbid();
-                
-                var clientDTO = new ClientDTO
-                {
 
-                    Id = client.Id,
-
-                    Email = client.Email,
-
-                    FirstName = client.FirstName,
-
-                    LastName = client.LastName,
-
-                    Accounts = client.Accounts.Select(ac => new AccountDTO
-
-                    {
-
-                        Id = ac.Id,
-
-                        Balance = ac.Balance,
-
-                        CreationDate = ac.CreationDate,
-
-                        Number = ac.Number
-
-                    }).ToList()
-
-                };
+                var clientDTO = new ClientDTO(client);
 
                 return Ok(clientDTO);
 
@@ -116,7 +67,6 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-
                 Console.WriteLine(c.FirstName + " " +c.LastName);
 
                 Client clientCreated = new Client() { FirstName = c.FirstName, LastName = c.LastName, Email = c.Email, Password = c.Password };

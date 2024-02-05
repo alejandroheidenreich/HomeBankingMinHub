@@ -58,6 +58,7 @@ namespace HomeBankingMinHub
                 app.UseSwaggerUI();
             }
 
+            app.UseDefaultFiles();
 
             app.UseStaticFiles();
 
