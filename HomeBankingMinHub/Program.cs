@@ -1,7 +1,9 @@
 using HomeBankingMindHub.Models;
+using HomeBankingMinHub.Controllers;
 using HomeBankingMinHub.Models;
 using HomeBankingMinHub.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace HomeBankingMinHub
 {
@@ -15,15 +17,27 @@ namespace HomeBankingMinHub
             builder.Services.AddRazorPages();
 
             // Add DbContext to the container
-            builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
+            //builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
 
             // Add service to the container
+            //builder.Services.AddScoped<IClientRepository, ClientRepository>();
+
+
+            //builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+
+            builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
+
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
+            builder.Services.AddEndpointsApiExplorer();
 
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
+            //app.MapGet("/hola", () => "hola");
+            
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -37,11 +51,20 @@ namespace HomeBankingMinHub
             {
                 app.UseExceptionHandler("/Error");
             }
+            else
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.MapControllers();
 
             app.MapRazorPages();
 
