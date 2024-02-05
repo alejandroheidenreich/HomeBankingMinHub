@@ -1,4 +1,4 @@
-﻿using System.Transactions;
+﻿using HomeBankingMinHub.Models;
 
 namespace HomeBankingMinHub.DTOs
 {
@@ -8,7 +8,25 @@ namespace HomeBankingMinHub.DTOs
         public string Number { get; set; }
         public DateTime CreationDate { get; set; }
         public double Balance { get; set; }
-        public ICollection<Transaction> Transactions{ get; set; }
+        public ICollection<TransactionDTO> Transactions{ get; set; }
 
+        public AccountDTO()
+        {
+        }
+        public AccountDTO(Account account)
+        {
+            Id = account.Id;
+            Number = account.Number;
+            CreationDate = account.CreationDate;
+            Balance = account.Balance;
+            Transactions = account.Transactions.Select(tr => new TransactionDTO
+            {
+                Id = tr.Id,
+                Type = tr.Type,
+                Amount = tr.Amount,
+                Description = tr.Description,
+                Date = tr.Date,
+            }).ToList();
+        }
     }
 }
