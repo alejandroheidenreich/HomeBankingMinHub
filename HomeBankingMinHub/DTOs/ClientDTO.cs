@@ -16,6 +16,8 @@ namespace HomeBankingMinHub.DTOs
 
         public ICollection<AccountDTO> Accounts { get; set; }
 
+        public ICollection<ClientLoanDTO> Loans { get; set; }
+
         public ClientDTO() {}
 
         public ClientDTO(Client client)
@@ -31,6 +33,16 @@ namespace HomeBankingMinHub.DTOs
                 CreationDate = ac.CreationDate,
                 Number = ac.Number
             }).ToList();
+            Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+            {
+                Id = cl.Id,
+                LoanId = cl.LoanId,
+                Name = cl.Loan.Name,
+                Amount = cl.Amount,
+                Payments = int.Parse(cl.Payments)
+            }).ToList();
+
+
         }
     }
 }
