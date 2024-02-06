@@ -3,6 +3,7 @@ using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace HomeBankingMinHub.Controllers
@@ -63,13 +64,16 @@ namespace HomeBankingMinHub.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]Client c)
+        public IActionResult Post([FromBody]NewClientDTO newClient)
         {
             try
             {
-                Console.WriteLine(c.FirstName + " " +c.LastName);
+                if (newClient == null || newClient.Email.IsNullOrEmpty() || newClient.FirstName.IsNullOrEmpty() || newClient.LastName.IsNullOrEmpty())
+                    return BadRequest();
 
-                Client clientCreated = new Client() { FirstName = c.FirstName, LastName = c.LastName, Email = c.Email, Password = c.Password };
+                Client clientCreated = new Client(newClient);
+
+                _clientRepository.Save(clientCreated);
 
                 return Created("Usuario Creado", clientCreated);
 

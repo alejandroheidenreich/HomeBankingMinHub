@@ -1,4 +1,6 @@
-﻿namespace HomeBankingMinHub.Models
+﻿using HomeBankingMinHub.DTOs;
+
+namespace HomeBankingMinHub.Models
 {
     public class Client
     {
@@ -9,6 +11,17 @@
         public string Email { get; set; }
         public string Password{ get; set; }
         public ICollection<Account> Accounts{ get; set; }
+
+        public Client()
+        {
+        }
+
+        public Client(NewClientDTO newClient)
+        {
+            FirstName = newClient.FirstName;
+            LastName = newClient.LastName;
+            Email = newClient.Email;
+        }
 
     }
 }

@@ -25,11 +25,14 @@ namespace HomeBankingMinHub
 
 
             //builder.Services.AddControllers();
+            // Add controllers to the container.
+            //builder.Services.AddControllers().AddJsonOptions(x =>x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
             builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
 
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
             builder.Services.AddEndpointsApiExplorer();
 
