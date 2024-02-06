@@ -10,6 +10,7 @@ var app = new Vue({
             .then(function (response) {
                 //get client ifo
                 app.clientInfo = response.data;
+                console.log(app.clientInfo);
             })
             .catch(function (error) {
                 // handle error

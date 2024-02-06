@@ -20,7 +20,7 @@
         </div>
         <div class="row">
             <div v-for="account in clientInfo.accounts" class="col-12 col-md-3 mt-2">
-                <a class="account-link" v-bind:href="'http://localhost:5041/account.html?id='+account.id">
+                <a class="account-link" v-bind:href="'http://localhost:15922/account.html?id='+account.id">
                     <div class="card border-0 account">
                         <div class="card-body">
                             <h5 class="card-title account-number">{{ account.number }}</h5>
@@ -34,11 +34,11 @@
         <div class="row mt-3">
             <div class="col">
                 <h2 class="display-6">Loans</h2>
-                <span class="small" v-if="clientInfo.loans != null && clientInfo.loans?.length <= 0">No loans</span>
+                <span class="small" v-if="clientInfo.credits != null && clientInfo.credits?.length <= 0">No loans</span>
             </div>
         </div>
         <div class="row">
-            <div v-for="loan in clientInfo.loans" class="col-12 col-md-3 mt-2">
+            <div v-for="loan in clientInfo.credits" class="col-12 col-md-3 mt-2">
                 <div class="card border-0 loan">
                     <div class="card-body">
                         <h5 class="card-title">{{ loan.name }}</h5>
