@@ -6,11 +6,10 @@ var app = new Vue({
     },
     methods:{
         getData: function(){
-            axios.get("/api/clients/4")
+            axios.get("/api/clients/1")
             .then(function (response) {
                 //get client ifo
                 app.clientInfo = response.data;
-                console.log(app.clientInfo);
             })
             .catch(function (error) {
                 // handle error
