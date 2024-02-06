@@ -16,7 +16,9 @@ namespace HomeBankingMinHub.DTOs
 
         public ICollection<AccountDTO> Accounts { get; set; }
 
-        public ICollection<ClientLoanDTO> Loans { get; set; }
+        public ICollection<ClientLoanDTO> Credits { get; set; }
+
+        public ICollection<CardDTO> Cards { get; set; }
 
         public ClientDTO() {}
 
@@ -33,7 +35,7 @@ namespace HomeBankingMinHub.DTOs
                 CreationDate = ac.CreationDate,
                 Number = ac.Number
             }).ToList();
-            Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+            Credits = client.ClientLoans.Select(cl => new ClientLoanDTO
             {
                 Id = cl.Id,
                 LoanId = cl.LoanId,
@@ -41,7 +43,17 @@ namespace HomeBankingMinHub.DTOs
                 Amount = cl.Amount,
                 Payments = int.Parse(cl.Payments)
             }).ToList();
-
+            Cards = client.Cards.Select(c => new CardDTO
+            {
+                Id = c.Id,
+                CardHolder = c.CardHolder,
+                Color = c.Color,
+                Cvv = c.Cvv,
+                FromDate = c.FromDate,
+                Number = c.Number,
+                ThruDate = c.ThruDate,
+                Type = c.Type
+            }).ToList();
 
         }
     }
