@@ -33,7 +33,6 @@ namespace HomeBankingMinHub.Controllers
                 }
          
                 return Ok(clientsDTO);
-
             }
             catch (Exception ex)
             {
