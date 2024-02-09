@@ -53,28 +53,38 @@ namespace HomeBankingMinHub.Controllers
                 var clientDTO = new ClientDTO(client);
 
                 return Ok(clientDTO);
-
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]NewClientDTO newClient)
+        public IActionResult Post([FromBody] NewClientDTO client)
         {
             try
             {
-                if (newClient == null || newClient.Email.IsNullOrEmpty() || newClient.FirstName.IsNullOrEmpty() || newClient.LastName.IsNullOrEmpty())
-                    return BadRequest();
+                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
+                    return StatusCode(400, "Invalid data");
+                
+                Client user = _clientRepository.FindByEmail(client.Email);
 
-                Client clientCreated = new Client(newClient);
+                if (user != null)
+                {
+                    return StatusCode(403, "Email is in use");
+                }
 
-                _clientRepository.Save(clientCreated);
+                Client newClient = new Client
+                {
+                    Email = client.Email,
+                    Password = client.Password,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                };
 
-                return Created("Usuario Creado", clientCreated);
+                _clientRepository.Save(newClient);
+                return Created("", newClient);
 
             }
             catch (Exception ex)
@@ -150,39 +160,39 @@ namespace HomeBankingMinHub.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Client client)
-        {
-            try
-            {
-                //validamos datos antes
-                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
+        //[HttpPost]
+        //public IActionResult Post([FromBody] Client client)
+        //{
+        //    try
+        //    {
+        //        //validamos datos antes
+        //        if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
+        //            return StatusCode(403, "datos inválidos");
 
-                //buscamos si ya existe el usuario
-                Client user = _clientRepository.FindByEmail(client.Email);
+        //        //buscamos si ya existe el usuario
+        //        Client user = _clientRepository.FindByEmail(client.Email);
 
-                if (user != null)
-                {
-                    return StatusCode(403, "Email está en uso");
-                }
+        //        if (user != null)
+        //        {
+        //            return StatusCode(403, "Email está en uso");
+        //        }
 
-                Client newClient = new Client
-                {
-                    Email = client.Email,
-                    Password = client.Password,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                };
+        //        Client newClient = new Client
+        //        {
+        //            Email = client.Email,
+        //            Password = client.Password,
+        //            FirstName = client.FirstName,
+        //            LastName = client.LastName,
+        //        };
 
-                _clientRepository.Save(newClient);
-                return Created("", newClient);
+        //        _clientRepository.Save(newClient);
+        //        return Created("", newClient);
 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
     }
 }
