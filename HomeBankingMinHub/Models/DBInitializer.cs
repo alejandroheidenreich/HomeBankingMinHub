@@ -24,7 +24,7 @@ namespace HomeBankingMinHub.Models
                     new Client { Email = "pepito@gmail.com", FirstName="Jose", LastName="Gomez", Password=ClientUtils.HashPassword("abc123")},
                     new Client { Email = "ana@gmail.com", FirstName="Ana", LastName="Perez", Password=ClientUtils.HashPassword("123456")},
                     new Client { Email = "miguelito@gmail.com", FirstName="Miguel", LastName="Lopez", Password=ClientUtils.HashPassword("hola123")},
-                    new Client { Email = "vcoronado@gmail.com", FirstName="Victor", LastName="Coronado", Password=ClientUtils.HashPassword("asd111")},
+                    new Client { Email = "vcoronado@gmail.com", FirstName="Victor", LastName="Coronado", Password=ClientUtils.HashPassword("123")},
                 };
 
                 context.Clients.AddRange(clients);
@@ -37,29 +37,29 @@ namespace HomeBankingMinHub.Models
         {
             if (!context.Accounts.Any())
             {
-                var allClients = context.Clients.ToList();
+                //var allClients = context.Clients.ToList();
 
-                foreach (var c in allClients)
-                {
-                    if (c != null)
-                    {
-                        var accounts = new Account[]
-                        {
-                            new Account { ClientId = c.Id, CreationDate = DateTime.Now, Number = string.Empty, Balance = 1000 }
-                        };
-                        foreach (Account account in accounts)
-                        {
-                            context.Accounts.Add(account);
-                        }
-                        context.SaveChanges();
-                    }
-                }
+                //foreach (var c in allClients)
+                //{
+                //    if (c != null)
+                //    {
+                //        var accounts = new Account[]
+                //        {
+                //            new Account { ClientId = c.Id, CreationDate = DateTime.Now, Number = string.Empty, Balance = 1000 }
+                //        };
+                //        foreach (Account account in accounts)
+                //        {
+                //            context.Accounts.Add(account);
+                //        }
+                //        context.SaveChanges();
+                //    }
+                //}
                 var accountVictor = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
                 if (accountVictor != null)
                 {
                     var accounts = new Account[]
                     {
-                        new Account {ClientId = accountVictor.Id, CreationDate = DateTime.Now, Number = "VIN001", Balance = 0 }
+                        new Account {ClientId = accountVictor.Id, CreationDate = DateTime.Now, Number = "VIN001", Balance = 1000 }
                     };
                     foreach (Account account in accounts)
                     {
@@ -120,7 +120,6 @@ namespace HomeBankingMinHub.Models
         {
             if (!context.Loans.Any())
             {
-                //crearemos 3 prestamos Hipotecario, Personal y Automotriz
                 var loans = new Loan[]
                 {
                     new Loan { Name = "Hipotecario", MaxAmount = 500000, Payments = "12,24,36,48,60" },
@@ -138,7 +137,6 @@ namespace HomeBankingMinHub.Models
                 var client1 = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
                 if (client1 != null)
                 {
-                    //ahora usaremos los 3 tipos de prestamos
                     var loan1 = context.Loans.FirstOrDefault(l => l.Name == "Hipotecario");
                     if (loan1 != null)
                     {
@@ -208,6 +206,15 @@ namespace HomeBankingMinHub.Models
                             CardHolder = client1.FirstName + " " + client1.LastName,
                             Type = CardType.CREDIT,
                             Color = CardColor.TITANIUM,
+                            Number = "2234-6745-552-7888",
+                            Cvv = 750,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(5),
+                        },new Card {
+                            ClientId= client1.Id,
+                            CardHolder = client1.FirstName + " " + client1.LastName,
+                            Type = CardType.CREDIT,
+                            Color = CardColor.SILVER,
                             Number = "2234-6745-552-7888",
                             Cvv = 750,
                             FromDate= DateTime.Now,

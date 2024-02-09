@@ -49,7 +49,9 @@
                         </ul>
                         <hr>
                         <ul class="nav nav-pills flex-column mb-auto">
-                            <button class="btn btn-danger img-fluid" v-on:click="signOut">Sign out</button>
+                            
+                                <button class="btn btn-danger img-fluid" v-on:click="signOut">Sign out</button>
+                            
                         </ul>
                     </div>
                 </div>
@@ -70,7 +72,7 @@
                             <div
                                 v-bind:class="['plastic-card__front', 'plastic-card__part', card.color.toLowerCase() +'-plastic-card']">
                                 <div class="plastic-card__square">
-                                    <span class="plastic-card__label">{{ card.type}} {{ card.color }}</span>
+                                    <span class="plastic-card__label">{{ card.type }} {{ card.color }}</span>
                                 </div>
                                 <img class="plastic-card__front-logo plastic-card__logo" src="img/logo vinotinto.png">
                                 <p class="plastic-card_numer">{{ card.number}}</p>
