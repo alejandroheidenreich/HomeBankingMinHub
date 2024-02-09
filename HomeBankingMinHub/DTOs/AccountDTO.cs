@@ -22,7 +22,7 @@ namespace HomeBankingMinHub.DTOs
             Transactions = account.Transactions.Select(tr => new TransactionDTO
             {
                 Id = tr.Id,
-                Type = tr.Type,
+                Type = tr.Type.ToString(),
                 Amount = tr.Amount,
                 Description = tr.Description,
                 Date = tr.Date,

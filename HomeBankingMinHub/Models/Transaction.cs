@@ -1,4 +1,6 @@
-﻿namespace HomeBankingMinHub.Models
+﻿using HomeBankingMindHub.Models;
+
+namespace HomeBankingMinHub.Models
 {
     public class Transaction
     {
@@ -8,5 +10,6 @@
         public string Description { get; set; }
         public DateTime Date { get; set; }
         public long AccountId { get; set; }
+        public Account Account { get; set; }
     }
 }

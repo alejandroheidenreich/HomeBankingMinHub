@@ -3,6 +3,7 @@ using HomeBankingMinHub.Controllers;
 using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using HomeBankingMinHub.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -15,14 +16,16 @@ namespace HomeBankingMinHub
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddRazorPages();
-
+            builder.Services.AddRazorPages()
+            .AddRazorPagesOptions(options => {
+                options.Conventions.AddPageRoute("/home", "");
+            });
+       
             // Add DbContext to the container
             //builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
 
             // Add service to the container
             //builder.Services.AddScoped<IClientRepository, ClientRepository>();
-
 
             //builder.Services.AddControllers();
             // Add controllers to the container.
@@ -31,6 +34,22 @@ namespace HomeBankingMinHub
             builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
+
+
+            //autenticación
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                  .AddCookie(options =>
+                  {
+                      options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                      options.LoginPath = new PathString("/index.html");
+                  });
+
+            //autorización
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
+            });
+
 
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -67,6 +86,8 @@ namespace HomeBankingMinHub
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
