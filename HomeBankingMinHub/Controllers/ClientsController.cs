@@ -1,6 +1,7 @@
 ﻿using HomeBankingMinHub.DTOs;
 using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
+using HomeBankingMinHub.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -78,7 +79,7 @@ namespace HomeBankingMinHub.Controllers
                 Client newClient = new Client
                 {
                     Email = client.Email,
-                    Password = client.Password,
+                    Password = ClientUtils.HashPassword(client.Password),
                     FirstName = client.FirstName,
                     LastName = client.LastName,
                 };

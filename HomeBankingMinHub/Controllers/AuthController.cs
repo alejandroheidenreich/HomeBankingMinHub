@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using HomeBankingMinHub.DTOs;
+using HomeBankingMinHub.Utils;
+
 
 namespace HomeBankingMinHub.Controllers
 {
@@ -26,8 +28,9 @@ namespace HomeBankingMinHub.Controllers
             {
                 Client user = _clientRepository.FindByEmail(client.Email);
 
-                if (user == null || !String.Equals(user.Password, client.Password))
-                    return StatusCode(400, $"Invalid log in ");
+        
+                if (user == null || ClientUtils.ValidatePassword(user.Password, client.Password))
+                    return StatusCode(400, $"Invalid log in");
 
                 var claims = new List<Claim>
                 {

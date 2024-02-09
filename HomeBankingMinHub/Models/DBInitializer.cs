@@ -1,4 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
+using HomeBankingMinHub.Utils;
 using System.Linq;
 
 namespace HomeBankingMinHub.Models
@@ -20,10 +21,10 @@ namespace HomeBankingMinHub.Models
             {
                 var clients = new Client[]
                 {
-                    new Client { Email = "pepito@gmail.com", FirstName="Jose", LastName="Gomez", Password="abc123"},
-                    new Client { Email = "ana@gmail.com", FirstName="Ana", LastName="Perez", Password="123456"},
-                    new Client { Email = "miguelito@gmail.com", FirstName="Miguel", LastName="Lopez", Password="hola123"},
-                    new Client { Email = "vcoronado@gmail.com", FirstName="Victor", LastName="Coronado", Password="asd111"},
+                    new Client { Email = "pepito@gmail.com", FirstName="Jose", LastName="Gomez", Password=ClientUtils.HashPassword("abc123")},
+                    new Client { Email = "ana@gmail.com", FirstName="Ana", LastName="Perez", Password=ClientUtils.HashPassword("123456")},
+                    new Client { Email = "miguelito@gmail.com", FirstName="Miguel", LastName="Lopez", Password=ClientUtils.HashPassword("hola123")},
+                    new Client { Email = "vcoronado@gmail.com", FirstName="Victor", LastName="Coronado", Password=ClientUtils.HashPassword("asd111")},
                 };
 
                 context.Clients.AddRange(clients);
