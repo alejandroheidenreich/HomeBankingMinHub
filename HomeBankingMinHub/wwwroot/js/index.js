@@ -27,14 +27,14 @@
         signIn: function (event) {
             event.preventDefault();
             axios.post('/api/auth/login', {
-                "email": this.email,
-                "password": this.password
-             })
-            .then(response => window.location.href = "/accounts.html")
-            .catch(() => {
-                this.errorMsg = "Sign in failed, check the information"
-                this.errorToats.show();
-            })
+                email: this.email,
+                password: this.password
+                })
+                .then(response => window.location.href = "/accounts.html")
+                .catch(() => {
+                    this.errorMsg = "Sign in failed, check the information"
+                    this.errorToats.show();
+                })
         },
 /*         signUp: function (event) {
             event.preventDefault();

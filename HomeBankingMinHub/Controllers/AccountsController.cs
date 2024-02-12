@@ -2,6 +2,7 @@
 using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using HomeBankingMinHub.Repositories;
+using HomeBankingMinHub.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +33,6 @@ namespace HomeBankingMinHub.Controllers
                 }
 
                 return Ok(accountsDTO);
-
             }
             catch (Exception ex)
             {
@@ -48,8 +48,7 @@ namespace HomeBankingMinHub.Controllers
             {
                 var account = _accountRepository.FindById(id);
 
-                if (account == null)
-                    return Forbid();
+                if (account == null) return Forbid();
 
                 var accountDTO = new AccountDTO(account);
 
@@ -60,9 +59,11 @@ namespace HomeBankingMinHub.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
 
+        
+
       
+
     }
 }

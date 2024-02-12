@@ -34,7 +34,7 @@ namespace HomeBankingMinHub.Controllers
 
                 var claims = new List<Claim>
                 {
-                    new Claim("Client", user.Email),//TOCAR
+                    new Claim("Client", user.Email),
                 };
 
                 var claimsIdentity = new ClaimsIdentity(

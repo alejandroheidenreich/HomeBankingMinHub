@@ -30,5 +30,7 @@ namespace HomeBankingMinHub.Utils
 
             return string.Equals(hashedInputPassword, hashedPassword, StringComparison.OrdinalIgnoreCase);
         }
+
+
     }
 }

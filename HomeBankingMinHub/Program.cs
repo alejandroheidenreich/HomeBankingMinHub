@@ -20,7 +20,7 @@ namespace HomeBankingMinHub
             .AddRazorPagesOptions(options => {
                 options.Conventions.AddPageRoute("/home", "");
             });
-       
+
             // Add DbContext to the container
             //builder.Services.AddDbContext<HomeBankingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
 
