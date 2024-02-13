@@ -60,7 +60,7 @@
                     <div class="row mt-3">
                         <div class="col">
                             <h2 class="display-6">Accounts</h2>
-                            <button v-if="clientInfo.accounts != null && clientInfo.accounts.length < 3" v-on:click="create" id="create" class="btn btn-sm btn-outline-success">Create</button>
+                            <button v-if="clientInfo.accounts.$values != null && clientInfo.accounts.length < 3" v-on:click="create" id="create" class="btn btn-sm btn-outline-success">Create</button>
                         </div>
                     </div>
                     <div class="row">
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div v-for="credit in clientInfo.credits" class="col-12 col-md-3 mt-2">
+                        <div v-for="credit in clientInfo.credits.$values" class="col-12 col-md-3 mt-2">
                             <div class="card border-0 credit">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ credit.name }}</h5>

@@ -15,11 +15,13 @@ namespace HomeBankingMinHub.Controllers
     {
         private IClientRepository _clientRepository;
         private IAccountRepository _accountRepository;
+        private ICardRepository _cardRepository;
 
-        public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository)
+        public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository, ICardRepository cardRepository)
         {
             _clientRepository = clientRepository;
             _accountRepository = accountRepository;
+            _cardRepository = cardRepository;
         }
 
         [HttpGet]
@@ -110,6 +112,40 @@ namespace HomeBankingMinHub.Controllers
                     _accountRepository.Save(account);
 
                     return StatusCode(201, $"Account created by {client.FirstName} {client.LastName}: {account.Number}");
+                }
+                return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("current/cards")]
+        public IActionResult CreateCard([FromBody] NewCardDTO newCard)
+        {
+            try
+            {
+                if (ValidateClientUser(out Client client) && client.Cards.Count < 6)
+                {
+                    var cards = _cardRepository.GetAllCards();
+
+                    if(!CardUtils.ValidateNewCard(newCard)) return StatusCode(400, $"Invalid data");
+
+                    Card card = new Card { 
+                        ClientId = client.Id, 
+                        CardHolder = $"{client.FirstName} {client.LastName}", 
+                        Type = (CardType)Enum.Parse(typeof(CardType), newCard.Type), 
+                        Color = (CardColor)Enum.Parse(typeof(CardColor), newCard.Color), 
+                        Number = CardUtils.GenerateCardNumber(cards), 
+                        Cvv = CardUtils.GenerateCvvNumber(), 
+                        FromDate = DateTime.Now, 
+                        ThruDate = DateTime.Now.AddYears(4)
+                    };
+
+                    _cardRepository.Save(card);
+
+                    return StatusCode(201, $"Card created by {client.FirstName} {client.LastName}: {card.Number}");
                 }
                 return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
             }
