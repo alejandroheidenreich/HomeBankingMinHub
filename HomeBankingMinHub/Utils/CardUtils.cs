@@ -34,5 +34,12 @@ namespace HomeBankingMinHub.Utils
             bool r = (newCard.Type == "CREDIT" || newCard.Type == "DEBIT") && (newCard.Color == "GOLD" || newCard.Color == "SILVER" || newCard.Color == "TITANIUM");
             return r;
         }
+
+        public static bool CanCreateNewCard(IEnumerable<Card> cards, CardType type, long clientId)
+        {
+            var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Type == type);
+
+            return cardsFilter.Count() < 3;
+        }
     }
 }

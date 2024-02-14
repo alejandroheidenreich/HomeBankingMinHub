@@ -121,6 +121,32 @@ namespace HomeBankingMinHub.Controllers
             }
         }
 
+        [HttpGet("current/accounts")]
+        public IActionResult GetAccounts()
+        {
+            try
+            {
+                if (ValidateClientUser(out Client client))
+                {
+                    var accounts = _accountRepository.FindByClientId(client.Id);
+                    var accountsDTO = new List<AccountDTO>();
+
+                    foreach (Account account in accounts)
+                    {
+                        accountsDTO.Add(new AccountDTO(account));
+                    }
+
+                    return Ok(accountsDTO);
+                }
+                return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [HttpPost("current/cards")]
         public IActionResult CreateCard([FromBody] NewCardDTO newCard)
         {
@@ -132,14 +158,18 @@ namespace HomeBankingMinHub.Controllers
 
                     if(!CardUtils.ValidateNewCard(newCard)) return StatusCode(400, $"Invalid data");
 
-                    Card card = new Card { 
-                        ClientId = client.Id, 
-                        CardHolder = $"{client.FirstName} {client.LastName}", 
-                        Type = (CardType)Enum.Parse(typeof(CardType), newCard.Type), 
-                        Color = (CardColor)Enum.Parse(typeof(CardColor), newCard.Color), 
-                        Number = CardUtils.GenerateCardNumber(cards), 
-                        Cvv = CardUtils.GenerateCvvNumber(), 
-                        FromDate = DateTime.Now, 
+                    CardType cType = (CardType)Enum.Parse(typeof(CardType), newCard.Type);
+
+                    if (!CardUtils.CanCreateNewCard(cards, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards");
+
+                    Card card = new Card {
+                        ClientId = client.Id,
+                        CardHolder = $"{client.FirstName} {client.LastName}",
+                        Type = cType,
+                        Color = (CardColor)Enum.Parse(typeof(CardColor), newCard.Color),
+                        Number = CardUtils.GenerateCardNumber(cards),
+                        Cvv = CardUtils.GenerateCvvNumber(),
+                        FromDate = DateTime.Now,
                         ThruDate = DateTime.Now.AddYears(4)
                     };
 
@@ -160,6 +190,7 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
+
                 string email;
                 if (User.FindFirst("Client") != null)
                 {
@@ -218,9 +249,6 @@ namespace HomeBankingMinHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-       
-
 
         private bool ValidateClientUser(out Client client)
         {

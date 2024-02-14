@@ -7,6 +7,7 @@ namespace HomeBankingMinHub.Intefaces
         IEnumerable<Account> GetAllAccounts();
         void Save(Account account);
         Account FindById(long id);
-        IEnumerable<Account> GetAccountsByClient(long clientId);
+        Account FinByNumber(string number);
+        IEnumerable<Account> FindByClientId(long clientId);
     }
 }

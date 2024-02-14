@@ -9,21 +9,15 @@ namespace HomeBankingMinHub.Repositories
     {
         public TransactionRepository(HomeBankingContext repositoryContext) : base(repositoryContext){}
 
-   
-        public IEnumerable<Transaction> GetAllTransactions()
+        public Transaction FindByNumber(long id)
         {
-            throw new NotImplementedException();
+            return FindByCondition(transaction => transaction.Id == id).FirstOrDefault();
         }
 
         public void Save(Transaction transaction)
         {
             Create(transaction);
             SaveChanges();
-        }
-
-        Transaction ITransactionRepository.FindById(long id)
-        {
-            throw new NotImplementedException();
         }
     }
 }
