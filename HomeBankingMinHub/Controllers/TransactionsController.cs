@@ -27,7 +27,6 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-
                 if (!ValidateClientUser(out Client client))
                 {
                     return Forbid("No existe el cliente");
@@ -48,29 +47,23 @@ namespace HomeBankingMinHub.Controllers
                     return Forbid("Monto o descripción no proporcionados.");
                 }
 
-                //buscamos las cuentas
                 Account fromAccount = _accountRepository.FinByNumber(transferDTO.FromAccountNumber);
                 if (fromAccount == null)
                 {
                     return Forbid("Cuenta de origen no existe");
                 }
 
-                //controlamos el monto
                 if (fromAccount.Balance < transferDTO.Amount)
                 {
                     return Forbid("Fondos insuficientes");
                 }
 
-                //buscamos la cuenta de destino
                 Account toAccount = _accountRepository.FinByNumber(transferDTO.ToAccountNumber);
                 if (toAccount == null)
                 {
                     return Forbid("Cuenta de destino no existe");
                 }
 
-                //demas logica para guardado
-                //comenzamos con la inserrción de las 2 transacciones realizadas
-                //desde toAccount se debe generar un debito por lo tanto lo multiplicamos por -1
                 _transactionRepository.Save(new Transaction
                 {
                     Type = TransactionType.DEBIT,
@@ -80,7 +73,6 @@ namespace HomeBankingMinHub.Controllers
                     Date = DateTime.Now,
                 });
 
-                //ahora una credito para la cuenta fromAccount
                 _transactionRepository.Save(new Transaction
                 {
                     Type = TransactionType.CREDIT,
@@ -90,26 +82,21 @@ namespace HomeBankingMinHub.Controllers
                     Date = DateTime.Now,
                 });
 
-                //seteamos los valores de las cuentas, a la ccuenta de origen le restamos el monto
                 fromAccount.Balance = fromAccount.Balance - transferDTO.Amount;
-                //actualizamos la cuenta de origen
+
                 _accountRepository.Save(fromAccount);
 
-                //a la cuenta de destino le sumamos el monto
                 toAccount.Balance = toAccount.Balance + transferDTO.Amount;
-                //actualizamos la cuenta de destino
+
                 _accountRepository.Save(toAccount);
 
-                //return Created("Creado con éxito", new AccountDTO(fromAccount));
-                return Ok("Creado con éxito");
+                return Created("Creado con exito", fromAccount);
 
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
-
             }
-
         }
 
         private bool ValidateClientUser(out Client client)
