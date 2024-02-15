@@ -1,4 +1,6 @@
-﻿namespace HomeBankingMinHub.Models
+﻿using HomeBankingMinHub.DTOs;
+
+namespace HomeBankingMinHub.Models
 {
     public class Loan
     {
