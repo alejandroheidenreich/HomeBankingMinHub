@@ -35,11 +35,18 @@ namespace HomeBankingMinHub.Utils
             return r;
         }
 
-        public static bool CanCreateNewCard(IEnumerable<Card> cards, CardType type, long clientId)
+        public static bool CanCreateCardType(IEnumerable<Card> cards, CardType type, long clientId)
         {
             var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Type == type);
 
             return cardsFilter.Count() < 3;
+        }
+
+        public static bool CanCreateCardColor(IEnumerable<Card> cards, CardColor color, long clientId)
+        {
+            var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Color == color);
+
+            return cardsFilter.Count() == 0;
         }
     }
 }
