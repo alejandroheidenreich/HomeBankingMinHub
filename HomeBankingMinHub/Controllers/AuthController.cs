@@ -46,7 +46,7 @@ namespace HomeBankingMinHub.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
 
-                return Ok();//TOCAR
+                return Ok();
 
             }
             catch (Exception ex)

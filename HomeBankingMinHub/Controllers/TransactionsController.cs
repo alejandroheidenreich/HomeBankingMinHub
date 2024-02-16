@@ -30,39 +30,44 @@ namespace HomeBankingMinHub.Controllers
             {
                 if (!ValidateClientUser(out Client client))
                 {
-                    return Forbid("No existe el cliente");
+                    return StatusCode(401, "No existe el cliente");
                 }
 
                 if (transferDTO.FromAccountNumber.IsNullOrEmpty() || transferDTO.ToAccountNumber.IsNullOrEmpty())
                 {
-                    return Forbid("Cuenta de origen o cuenta de destino no proporcionada.");
+                    return StatusCode(403, "Cuenta de origen o cuenta de destino no proporcionada.");
                 }
 
                 if (transferDTO.FromAccountNumber == transferDTO.ToAccountNumber)
                 {
-                    return Forbid("No se permite la transferencia a la misma cuenta.");
+                    return StatusCode(403, "No se permite la transferencia a la misma cuenta.");
                 }
 
-                if (transferDTO.Amount <= 0 || transferDTO.Description.IsNullOrEmpty())
+                if (transferDTO.Amount == 0 || transferDTO.Description.IsNullOrEmpty())
                 {
-                    return Forbid("Monto o descripción no proporcionados.");
+                    return StatusCode(403, "Monto o descripción no proporcionados.");
+                }
+
+                if (transferDTO.Amount <= 0)
+                {
+                    return StatusCode(403, "Monto invalido.");
                 }
 
                 Account fromAccount = _accountRepository.FinByNumber(transferDTO.FromAccountNumber);
                 if (fromAccount == null)
                 {
-                    return Forbid("Cuenta de origen no existe");
+                    return StatusCode(403, "Cuenta de origen no existe");
                 }
 
                 if (fromAccount.Balance < transferDTO.Amount)
                 {
-                    return Forbid("Fondos insuficientes");
+                    return StatusCode(403, "Fondos insuficientes");
                 }
 
                 Account toAccount = _accountRepository.FinByNumber(transferDTO.ToAccountNumber);
                 if (toAccount == null)
                 {
-                    return Forbid("Cuenta de destino no existe");
+                    return StatusCode(403, "Cuenta de destino no existe");
                 }
 
                 _transactionRepository.Save(new Transaction
@@ -91,8 +96,7 @@ namespace HomeBankingMinHub.Controllers
 
                 _accountRepository.Save(toAccount);
 
-                return Created("Creado con exito", fromAccount);
-
+                return StatusCode(201, "Creado con exito");
             }
             catch (Exception ex)
             {

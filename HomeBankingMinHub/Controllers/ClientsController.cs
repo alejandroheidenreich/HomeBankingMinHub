@@ -89,7 +89,7 @@ namespace HomeBankingMinHub.Controllers
                 };
 
                 _clientRepository.Save(newClient);
-                return Created("", newClient);
+                return StatusCode(201, "Nuevo cliente creado");
 
             }
             catch (Exception ex)
@@ -160,11 +160,11 @@ namespace HomeBankingMinHub.Controllers
 
                     CardType cType = (CardType)Enum.Parse(typeof(CardType), newCard.Type);
 
-                    if (!CardUtils.CanCreateCardType(cards, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards");
+                    if (!CardUtils.CanCreateCardType(cards, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards type");
 
                     CardColor cColor = (CardColor)Enum.Parse(typeof(CardColor), newCard.Type);
 
-                    if (!CardUtils.CanCreateCardColor(cards, cColor, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards");
+                    if (!CardUtils.CanCreateCardColor(cards, cColor, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards color");
 
                     Card card = new Card {
                         ClientId = client.Id,
@@ -202,14 +202,14 @@ namespace HomeBankingMinHub.Controllers
                 }
                 else
                 {
-                    return Forbid();
+                    return StatusCode(401, "No existe el cliente");
                 }
                 
                 Client client = _clientRepository.FindByEmail(email);
 
                 if (client == null)
                 {
-                    return Forbid();
+                    return StatusCode(401, "No existe el cliente");
                 }
 
                 var clientDTO = new ClientDTO(client);
@@ -246,7 +246,7 @@ namespace HomeBankingMinHub.Controllers
                 };
 
                 _clientRepository.Save(newClient);
-                return Created("", newClient);
+                return Created("New client created", newClient);
             }
             catch (Exception ex)
             {

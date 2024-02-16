@@ -61,9 +61,5 @@ namespace HomeBankingMinHub.Controllers
             }
         }
 
-        
-
-      
-
     }
 }

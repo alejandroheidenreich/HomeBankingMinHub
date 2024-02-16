@@ -57,52 +57,52 @@ namespace HomeBankingMinHub.Controllers
 
                 if (!ValidateClientUser(out Client client))
                 {
-                    return Forbid("No existe el cliente");
+                    return StatusCode(401, "No existe el cliente");
                 }
 
                 var loan = _loanRepository.FindById(loanApplicationDTO.LoanId);
 
                 if (loan == null)
                 {
-                    return Forbid();
+                    return StatusCode(403, "Prestamo inexistente");
                 }
 
                 if (loanApplicationDTO.ToAccountNumber == string.Empty)
                 {
-                    return Forbid("Cuenta de destino no proporcionada.");
+                    return StatusCode(403, "Cuenta de destino no proporcionada.");
                 }
 
                 Account toAccount = _accountRepository.FinByNumber(loanApplicationDTO.ToAccountNumber);
                 if (toAccount == null)
                 {
-                    return Forbid("Cuenta de destino no existe");
+                    return StatusCode(403, "Cuenta de destino no existe");
                 }
 
                 if (toAccount.ClientId != client.Id)
                 {
-                    return Forbid("La cuenta proporcionada no es del usuario actual");
+                    return StatusCode(403, "La cuenta proporcionada no es del usuario actual");
                 }
 
 
                 if (loanApplicationDTO.Payments.IsNullOrEmpty())
                 {
-                    return Forbid("Cuotas no proporcionadas.");
+                    return StatusCode(403, "Cuotas no proporcionadas.");
                 }
 
                 if (!ValidateLoanPayment(loanApplicationDTO.Payments, loanApplicationDTO.LoanId))
                 {
-                    return Forbid("Cuotas proporcionadas invalidas.");
+                    return StatusCode(403, "Cuotas proporcionadas invalidas.");
                 }
                 
 
                 if (loanApplicationDTO.Amount <= 0 )
                 {
-                    return Forbid("Monto debe ser mayor a cero.");
+                    return StatusCode(403, "Monto debe ser mayor a cero.");
                 }
 
                 if (loanApplicationDTO.Amount > loan.MaxAmount )
                 {
-                    return Forbid("Monto debe exceder el monto maximo del prestamo.");
+                    return StatusCode(403, "Monto debe exceder el monto maximo del prestamo.");
                 }
 
 
@@ -131,7 +131,7 @@ namespace HomeBankingMinHub.Controllers
 
                 _accountRepository.Save(toAccount);
 
-                return Created("Creado con exito", clientLoan);
+                return StatusCode(201, "Creado con exito");
 
             }
             catch (Exception ex)
