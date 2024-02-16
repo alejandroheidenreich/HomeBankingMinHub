@@ -4,6 +4,7 @@ using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HomeBankingMinHub.Controllers
 {
@@ -32,7 +33,7 @@ namespace HomeBankingMinHub.Controllers
                     return Forbid("No existe el cliente");
                 }
 
-                if (transferDTO.FromAccountNumber == string.Empty || transferDTO.ToAccountNumber == string.Empty)
+                if (transferDTO.FromAccountNumber.IsNullOrEmpty() || transferDTO.ToAccountNumber.IsNullOrEmpty())
                 {
                     return Forbid("Cuenta de origen o cuenta de destino no proporcionada.");
                 }
@@ -42,7 +43,7 @@ namespace HomeBankingMinHub.Controllers
                     return Forbid("No se permite la transferencia a la misma cuenta.");
                 }
 
-                if (transferDTO.Amount == 0 || transferDTO.Description == string.Empty)
+                if (transferDTO.Amount <= 0 || transferDTO.Description.IsNullOrEmpty())
                 {
                     return Forbid("Monto o descripción no proporcionados.");
                 }

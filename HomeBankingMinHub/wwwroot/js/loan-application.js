@@ -17,8 +17,8 @@ var app = new Vue({
             Promise.all([axios.get("/api/loans"),axios.get("/api/clients/current/accounts")])
             .then((response) => {
                 //get loan types ifo
-                this.loanTypes = response[0].data.$values;
-                this.clientAccounts = response[1].data.$values;
+                this.loanTypes = response[0].data;
+                this.clientAccounts = response[1].data;
             })
             .catch((error) => {
                 this.errorMsg = "Error getting data";
