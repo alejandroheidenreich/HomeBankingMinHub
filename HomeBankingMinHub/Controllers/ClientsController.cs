@@ -162,9 +162,9 @@ namespace HomeBankingMinHub.Controllers
 
                     if (!CardUtils.CanCreateCardType(cards, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards type");
 
-                    CardColor cColor = (CardColor)Enum.Parse(typeof(CardColor), newCard.Type);
+                    CardColor cColor = (CardColor)Enum.Parse(typeof(CardColor), newCard.Color);
 
-                    if (!CardUtils.CanCreateCardColor(cards, cColor, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards color");
+                    if (!CardUtils.CanCreateCardColor(cards, cColor, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cColor} cards color");
 
                     Card card = new Card {
                         ClientId = client.Id,
