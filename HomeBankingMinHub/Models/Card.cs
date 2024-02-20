@@ -16,6 +16,9 @@ namespace HomeBankingMinHub.Models
         public long ClientId { get; set; }
         public Client Client { get; set; }
 
+        public Card()
+        {
+        }
         public Card(long clientId, string cardHolder, CardType type, CardColor color, List<Card> cards)
         {
             ClientId = clientId;

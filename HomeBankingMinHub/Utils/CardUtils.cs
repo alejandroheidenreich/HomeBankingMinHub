@@ -31,22 +31,19 @@ namespace HomeBankingMinHub.Utils
 
         public static bool ValidateNewCard(NewCardDTO newCard)
         {
-            bool r = (newCard.Type == "CREDIT" || newCard.Type == "DEBIT") && (newCard.Color == "GOLD" || newCard.Color == "SILVER" || newCard.Color == "TITANIUM");
-            return r;
+            return (newCard.Type == "CREDIT" || newCard.Type == "DEBIT") && (newCard.Color == "GOLD" || newCard.Color == "SILVER" || newCard.Color == "TITANIUM");
         }
 
         public static bool CanCreateCardType(IEnumerable<Card> cards, CardType type, long clientId)
         {
             var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Type == type);
-
-            return cardsFilter.Count() < 3;
+            return cardsFilter is not null && cardsFilter.Count() < 3;
         }
 
-        public static bool CanCreateCardColor(IEnumerable<Card> cards, CardColor color, long clientId)
+        public static bool CanCreateCardColor(IEnumerable<Card> cards, CardColor color, CardType type, long clientId)
         {
-            var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Color == color);
-
-            return cardsFilter.Count() == 0;
+            var cardsFilter = cards.Where(c => c.ClientId == clientId && c.Color == color && c.Type == type);
+            return cardsFilter is not null && cardsFilter.Count() == 0;
         }
     }
 }

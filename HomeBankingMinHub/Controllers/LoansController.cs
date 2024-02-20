@@ -13,19 +13,11 @@ namespace HomeBankingMinHub.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        private ILoanRepository _loanRepository;
-        private IClientRepository _clientRepository;
-        private IClientLoanRepository _clientLoanRepository;
-        private IAccountRepository _accountRepository;
-        private ITransactionRepository _transactionRepository;
+        private readonly ILoanService _loanService;
 
-        public LoansController(ILoanRepository loanRepository, IClientLoanRepository clientLoanRepository, IClientRepository clientRepository, IAccountRepository accountRepository, ITransactionRepository transactionRepository)
+        public LoansController(ILoanService loanService)
         {
-            _loanRepository = loanRepository;
-            _clientRepository = clientRepository;
-            _clientLoanRepository = clientLoanRepository;
-            _accountRepository = accountRepository;
-            _transactionRepository = transactionRepository;
+            _loanService = loanService;
         }
 
         [HttpGet]
@@ -33,15 +25,7 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                var loans = _loanRepository.GetAll();
-                var loansDTO = new List<LoanDTO>();
-
-                foreach (Loan loan in loans)
-                {
-                    loansDTO.Add(new LoanDTO(loan));
-                }
-
-                return Ok(loansDTO);
+                return Ok(_loanService.GetLoans());
             }
             catch (Exception ex)
             {
@@ -54,85 +38,23 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-
-                if (!ValidateClientUser(out Client client))
+                string email = User.FindFirst("Client").Value;
+                if (!email.IsNullOrEmpty())
                 {
-                    return StatusCode(401, "No existe el cliente");
+                    string response = _loanService.CreateClientLoan(loanApplicationDTO, email);
+                    if (string.Equals(response, "OK"))
+                    {
+                        return StatusCode(200, "Loan released");
+                    }
+                    else
+                    {
+                        return StatusCode(403, response);
+                    }
                 }
-
-                var loan = _loanRepository.FindById(loanApplicationDTO.LoanId);
-
-                if (loan == null)
+                else
                 {
-                    return StatusCode(403, "Prestamo inexistente");
+                    return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
                 }
-
-                if (loanApplicationDTO.ToAccountNumber == string.Empty)
-                {
-                    return StatusCode(403, "Cuenta de destino no proporcionada.");
-                }
-
-                Account toAccount = _accountRepository.FinByNumber(loanApplicationDTO.ToAccountNumber);
-                if (toAccount == null)
-                {
-                    return StatusCode(403, "Cuenta de destino no existe");
-                }
-
-                if (toAccount.ClientId != client.Id)
-                {
-                    return StatusCode(403, "La cuenta proporcionada no es del usuario actual");
-                }
-
-
-                if (loanApplicationDTO.Payments.IsNullOrEmpty())
-                {
-                    return StatusCode(403, "Cuotas no proporcionadas.");
-                }
-
-                if (!ValidateLoanPayment(loanApplicationDTO.Payments, loanApplicationDTO.LoanId))
-                {
-                    return StatusCode(403, "Cuotas proporcionadas invalidas.");
-                }
-
-
-                if (loanApplicationDTO.Amount <= 0)
-                {
-                    return StatusCode(403, "Monto debe ser mayor a cero.");
-                }
-
-                if (loanApplicationDTO.Amount > loan.MaxAmount)
-                {
-                    return StatusCode(403, "Monto debe exceder el monto maximo del prestamo.");
-                }
-
-
-                ClientLoan clientLoan = new ClientLoan()
-                {
-                    ClientId = client.Id,
-                    Amount = loanApplicationDTO.Amount * 1.20,
-                    LoanId = loanApplicationDTO.LoanId,
-                    Payments = loanApplicationDTO.Payments,
-
-                };
-
-                _clientLoanRepository.Save(clientLoan);
-
-                _transactionRepository.Save(new Transaction
-                {
-                    Type = TransactionType.CREDIT,
-                    Amount = loanApplicationDTO.Amount,
-                    Description = $"{loan.Name} loan approved",
-                    AccountId = toAccount.Id,
-                    Date = DateTime.Now,
-                });
-
-
-                toAccount.Balance = toAccount.Balance + loanApplicationDTO.Amount;
-
-                _accountRepository.Save(toAccount);
-
-                return StatusCode(201, "Creado con exito");
-
             }
             catch (Exception ex)
             {
@@ -140,36 +62,8 @@ namespace HomeBankingMinHub.Controllers
             }
         }
 
-        private bool ValidateClientUser(out Client client)
-        {
-            client = null;
-            if (User.FindFirst("Client") != null)
-            {
-                client = _clientRepository.FindByEmail(User.FindFirst("Client").Value);
-                if (client != null)
-                    return true;
-            }
-            return false;
-        }
 
-        private bool ValidateLoanPayment(string payment, long id)
-        {
-            var loans = _loanRepository.GetAll();
-            foreach (var loan in loans)
-            {
-                if (loan.Id == id)
-                {
-                    if (loan.Payments.Split(',').Contains(payment))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
+
+        
     }
 }

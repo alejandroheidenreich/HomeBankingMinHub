@@ -12,11 +12,11 @@ namespace HomeBankingMinHub.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private IAccountRepository _accountRepository;
+        private readonly IAccountService _accountService;
 
-        public AccountsController(IAccountRepository accountRepository)
+        public AccountsController(IAccountService accountService)
         {
-            _accountRepository = accountRepository;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -24,15 +24,7 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                var accounts = _accountRepository.GetAllAccounts();
-                var accountsDTO = new List<AccountDTO>();
-
-                foreach (Account account in accounts)
-                {
-                    accountsDTO.Add(new AccountDTO(account));
-                }
-
-                return Ok(accountsDTO);
+                return Ok(_accountService.GetAccounts());
             }
             catch (Exception ex)
             {
@@ -46,14 +38,18 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                var account = _accountRepository.FindById(id);
+                if (id > 0)
+                {
+                    var account = _accountService.GetAccount(id);
+                    if (account == null)
+                        return StatusCode(404, "Account not found");
 
-                if (account == null) return Forbid();
-
-                var accountDTO = new AccountDTO(account);
-
-                return Ok(accountDTO);
-
+                    return Ok(account);
+                }
+                else
+                {
+                    return StatusCode(400, "Invalid ID given");
+                }
             }
             catch (Exception ex)
             {
