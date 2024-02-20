@@ -5,7 +5,7 @@ namespace HomeBankingMinHub.Utils
 {
     public class CardUtils
     {
-
+        
         public static string GenerateCardNumber(IEnumerable<Card> cards)
         {
             Random rand = new Random();

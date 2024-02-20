@@ -93,14 +93,14 @@ namespace HomeBankingMinHub.Controllers
                 {
                     return StatusCode(403, "Cuotas proporcionadas invalidas.");
                 }
-                
 
-                if (loanApplicationDTO.Amount <= 0 )
+
+                if (loanApplicationDTO.Amount <= 0)
                 {
                     return StatusCode(403, "Monto debe ser mayor a cero.");
                 }
 
-                if (loanApplicationDTO.Amount > loan.MaxAmount )
+                if (loanApplicationDTO.Amount > loan.MaxAmount)
                 {
                     return StatusCode(403, "Monto debe exceder el monto maximo del prestamo.");
                 }

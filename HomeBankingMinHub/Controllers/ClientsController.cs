@@ -13,15 +13,11 @@ namespace HomeBankingMinHub.Controllers
     [Route("api/[controller]")]
     public class ClientsController : ControllerBase
     {
-        private IClientRepository _clientRepository;
-        private IAccountRepository _accountRepository;
-        private ICardRepository _cardRepository;
+        private readonly IClientService _clientService;
 
-        public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository, ICardRepository cardRepository)
+        public ClientsController(IClientService clientService)
         {
-            _clientRepository = clientRepository;
-            _accountRepository = accountRepository;
-            _cardRepository = cardRepository;
+            _clientService = clientService;
         }
 
         [HttpGet]
@@ -29,15 +25,7 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                var clients = _clientRepository.GetAllClients();
-                var clientsDTO = new List<ClientDTO>();
-
-                foreach (Client client in clients)
-                {
-                    clientsDTO.Add(new ClientDTO(client));
-                }
-         
-                return Ok(clientsDTO);
+                return Ok(_clientService.GetAllClients());
             }
             catch (Exception ex)
             {
@@ -51,13 +39,22 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                var client = _clientRepository.FindById(id);
-
-                if (client == null) return Forbid();
-
-                var clientDTO = new ClientDTO(client);
-
-                return Ok(clientDTO);
+                if (id > 0)
+                {
+                    var client = _clientService.GetClientById(id);
+                    if (client == null)
+                    {
+                        return StatusCode(404, "Client not found");
+                    }
+                    else
+                    {
+                        return Ok(client);
+                    }
+                }
+                else
+                {
+                    return StatusCode(400, "Invalid ID given");
+                }
             }
             catch (Exception ex)
             {
@@ -70,27 +67,15 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(client.Email) || string.IsNullOrEmpty(client.Password) || string.IsNullOrEmpty(client.FirstName) || string.IsNullOrEmpty(client.LastName))
-                    return StatusCode(400, "Invalid data");
-                
-                Client user = _clientRepository.FindByEmail(client.Email);
-
-                if (user != null)
+                string response = _clientService.CreateNewClient(client);
+                if (string.Equals(response, "OK"))
                 {
-                    return StatusCode(403, "Email is in use");
+                    return StatusCode(201, "New client created");
                 }
-
-                Client newClient = new Client
+                else
                 {
-                    Email = client.Email,
-                    Password = ClientUtils.HashPassword(client.Password),
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                };
-
-                _clientRepository.Save(newClient);
-                return StatusCode(201, "Nuevo cliente creado");
-
+                    return StatusCode(403, response);
+                }
             }
             catch (Exception ex)
             {
@@ -103,15 +88,18 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                if (ValidateClientUser(out Client client) && client.Accounts.Count < 3)
+                string email = User.FindFirst("Client").Value;
+                if (!email.IsNullOrEmpty())
                 {
-                    var accounts = _accountRepository.GetAllAccounts();
-
-                    Account account = new Account { ClientId = client.Id, CreationDate = DateTime.Now, Number = AccountUtils.GenerateVinNumber(accounts), Balance = 0 };
-
-                    _accountRepository.Save(account);
-
-                    return StatusCode(201, $"Account created by {client.FirstName} {client.LastName}: {account.Number}");
+                    string response = _clientService.CreateCurrentAccount(email);
+                    if (string.Equals(response, "OK"))
+                    {
+                        return StatusCode(201, "Account created");
+                    }
+                    else
+                    {
+                        return StatusCode(403, response);
+                    }
                 }
                 return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
             }
@@ -126,17 +114,10 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                if (ValidateClientUser(out Client client))
+                string email = User.FindFirst("Client").Value;
+                if (!email.IsNullOrEmpty())
                 {
-                    var accounts = _accountRepository.FindByClientId(client.Id);
-                    var accountsDTO = new List<AccountDTO>();
-
-                    foreach (Account account in accounts)
-                    {
-                        accountsDTO.Add(new AccountDTO(account));
-                    }
-
-                    return Ok(accountsDTO);
+                    return Ok(_clientService.GetCurrentAllAccounts(email));
                 }
                 return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
             }
@@ -152,34 +133,19 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
-                if (ValidateClientUser(out Client client) && client.Cards.Count < 6)
+                string email = User.FindFirst("Client").Value;
+
+                if (!email.IsNullOrEmpty())
                 {
-                    var cards = _cardRepository.GetAllCards();
-
-                    if(!CardUtils.ValidateNewCard(newCard)) return StatusCode(400, $"Invalid data");
-
-                    CardType cType = (CardType)Enum.Parse(typeof(CardType), newCard.Type);
-
-                    if (!CardUtils.CanCreateCardType(cards, cType, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards type");
-
-                    CardColor cColor = (CardColor)Enum.Parse(typeof(CardColor), newCard.Type);
-
-                    if (!CardUtils.CanCreateCardColor(cards, cColor, client.Id)) return StatusCode(400, $"You reached the maximum number of {cType} cards color");
-
-                    Card card = new Card {
-                        ClientId = client.Id,
-                        CardHolder = $"{client.FirstName} {client.LastName}",
-                        Type = cType,
-                        Color = cColor,
-                        Number = CardUtils.GenerateCardNumber(cards),
-                        Cvv = CardUtils.GenerateCvvNumber(),
-                        FromDate = DateTime.Now,
-                        ThruDate = DateTime.Now.AddYears(4)
-                    };
-
-                    _cardRepository.Save(card);
-
-                    return StatusCode(201, $"Card created by {client.FirstName} {client.LastName}: {card.Number}");
+                    string response = _clientService.CreateCurrentCard(newCard, email);
+                    if (string.Equals(response, "OK"))
+                    {
+                        return StatusCode(201, "Card created");
+                    }
+                    else
+                    {
+                        return StatusCode(403, response);
+                    }
                 }
                 return StatusCode(401, "The client request has not been completed because it lacks valid authentication credentials for the requested resource.");
             }
@@ -194,75 +160,18 @@ namespace HomeBankingMinHub.Controllers
         {
             try
             {
+                string email = User.FindFirst("Client").Value;
 
-                string email;
-                if (User.FindFirst("Client") != null)
+                if (!email.IsNullOrEmpty())
                 {
-                    email = User.FindFirst("Client").Value;
+                    return Ok(_clientService.GetCurrent(email));
                 }
-                else
-                {
-                    return StatusCode(401, "No existe el cliente");
-                }
-                
-                Client client = _clientRepository.FindByEmail(email);
-
-                if (client == null)
-                {
-                    return StatusCode(401, "No existe el cliente");
-                }
-
-                var clientDTO = new ClientDTO(client);
-                
-                return Ok(clientDTO);
+                return StatusCode(401, "Client doesnt exist");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-        }
-
-        [HttpPost("manager")]
-        public IActionResult Post([FromBody] Client client)
-        {
-            try
-            {
-                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
-
-                Client user = _clientRepository.FindByEmail(client.Email);
-
-                if (user != null)
-                {
-                    return StatusCode(403, "Email está en uso");
-                }
-
-                Client newClient = new Client
-                {
-                    Email = client.Email,
-                    Password = client.Password,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                };
-
-                _clientRepository.Save(newClient);
-                return Created("New client created", newClient);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        private bool ValidateClientUser(out Client client)
-        {
-            client = null;
-            if (User.FindFirst("Client") != null)
-            {
-                client = _clientRepository.FindByEmail(User.FindFirst("Client").Value);
-                if (client != null) return true;
-            }
-            return false;
         }
     }
 }

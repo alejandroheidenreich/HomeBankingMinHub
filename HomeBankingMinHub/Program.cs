@@ -3,6 +3,7 @@ using HomeBankingMinHub.Controllers;
 using HomeBankingMinHub.Intefaces;
 using HomeBankingMinHub.Models;
 using HomeBankingMinHub.Repositories;
+using HomeBankingMinHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -57,6 +58,7 @@ namespace HomeBankingMinHub
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
             builder.Services.AddScoped<ILoanRepository, LoanRepository>();
             builder.Services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
+            builder.Services.AddScoped<IClientService, ClientService>();
 
             builder.Services.AddEndpointsApiExplorer();
 
