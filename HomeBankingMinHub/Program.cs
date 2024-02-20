@@ -61,6 +61,7 @@ namespace HomeBankingMinHub
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<ILoanService, LoanService>();
 
             builder.Services.AddEndpointsApiExplorer();
 
